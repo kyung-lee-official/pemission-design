@@ -73,6 +73,14 @@ Now we introduce `superRole`, so that A-role and B-role can have C-role as its `
 
 There is a rule we should carry through when designing hierarchical permissions, that hierarchical permissions only provides relations, it can only answer questions like 'if alpha role is a superRole of beta role?', it doesn't determine 'if Alice can freeze Bob?', just because Bob is a member of beta role doesn't necessarily mean Alice can perform any operations on Bob. Decisions like this should be made by business-specific permissions, which should be defined in the PDP side. For example, if you try to implements this with NestJS and Cerbos, you should send the relations of roles of Alice and Bob to Cerbos, and Cerbos will be responsible for determining if Alice can freeze Bob.
 
+## Access a List of Resources
+
+Consider a typical scenario where a dropdown component offers a list of roles, and there are several common access control modes: access all roles, access sub-roles, access direct sub-roles, access own role. The selected mode should be consistent across the application, if a member is only allowed to read her own role in alpha business logic, she should not be able to read all roles in beta business logic.
+
+Role is a special resource, when designing a permission system, we need to decide which access control model to use from the very beginning. Unless you have specific needs, we recommend allowing all members to read all roles (`["read"] roles`).
+
+Here is an example. When creating an event template, the template's associated role need to be selected in the dropdown. For better user experience, we only display the role the member belongs to, and display all roles for the `admin` role. This doesn't mean other roles can't read all roles, they can still read all roles using API. However, creating a template only allows the member to select the role she belongs to, if the member try to send a template creating request via API with a role she doesn't belong to, the backend will reject the request.
+
 # FAQ
 
 -   Why it's inappropriate to desgin roles same way as the actual organization structure?
